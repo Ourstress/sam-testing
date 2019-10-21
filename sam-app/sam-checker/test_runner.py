@@ -18,6 +18,11 @@ def setup_env():
 
 def execute():
     setup_env()
+    # To access custom packages
+    os.environ['PATH'] = os.environ['PATH'] + ":" + "/tmp/myProject"
+
+    print(os.popen("ls -la /tmp/myProject").read())
+
     # Get text feedback of unit test results
     runUnitTest = 'cd /tmp/myProject; python3 -m unittest -v tests.py 2>&1'
     unitTestResults = os.popen(runUnitTest).read()
@@ -40,7 +45,9 @@ def execute():
     if ("summary" in jsonOutput):
         if("failed" in jsonOutput["summary"]):
             isComplete = False
-        elif(jsonOutput["summary"].get("total", 0) == jsonOutput["summary"].get("passed", 1)):
+        # elif(jsonOutput["summary"].get("total", 0) == jsonOutput["summary"].get("passed", 1)):
+        #     isComplete = True
+        elif(jsonOutput["exitcode"] == 0 or jsonOutput["exitcode"] == 2):
             isComplete = True
         else:
             isComplete = False

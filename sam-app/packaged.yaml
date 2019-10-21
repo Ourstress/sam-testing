@@ -1,40 +1,40 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "sam-app
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'sam-app
 
   Sample SAM Template for sam-app
 
-  "
+  '
 Globals:
   Function:
     Timeout: 3
+Resources:
+  SamTestingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://aishu-samtest/d09bba0874ecd3fdc0c567f3a93bda84
+      Handler: app.lambda_handler
+      Runtime: python3.6
+      Events:
+        SamTesting:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
 Outputs:
   SamTestingApi:
     Description: API Gateway endpoint URL for Prod stage for Sam Testing function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/app/
   SamTestingFunction:
     Description: Sam Testing Lambda Function ARN
     Value:
       Fn::GetAtt:
-        - SamTestingFunction
-        - Arn
+      - SamTestingFunction
+      - Arn
   SamTestingFunctionIamRole:
     Description: Implicit IAM Role created for Sam Testing function
     Value:
       Fn::GetAtt:
-        - SamTestingFunctionIamRole
-        - Arn
-Resources:
-  SamTestingFunction:
-    Properties:
-      CodeUri: s3://sc-learning-serverless-publish-sam-app/18c8e23f7273eaa283571d8414385156
-      Events:
-        SamTesting:
-          Properties:
-            Method: ANY
-            Path: /{proxy+}
-          Type: Api
-      Handler: app.lambda_handler
-      Runtime: python3.6
-    Type: AWS::Serverless::Function
-Transform: AWS::Serverless-2016-10-31
+      - SamTestingFunctionRole
+      - Arn

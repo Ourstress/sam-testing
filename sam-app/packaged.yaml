@@ -1,10 +1,10 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: "sam-app
+Description: 'sam-app
 
   Sample SAM Template for sam-app
 
-  "
+  '
 Globals:
   Function:
     Timeout: 30
@@ -12,7 +12,7 @@ Resources:
   SamTestingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://aishu-samtest/d09bba0874ecd3fdc0c567f3a93bda84
+      CodeUri: s3://aishu-samtest/736f535bf0d0fcece983adab9ab93a4d
       Handler: app.lambda_handler
       Runtime: python3.6
       Events:
@@ -30,11 +30,11 @@ Outputs:
     Description: Sam Testing Lambda Function ARN
     Value:
       Fn::GetAtt:
-        - SamTestingFunction
-        - Arn
+      - SamTestingFunction
+      - Arn
   SamTestingFunctionIamRole:
     Description: Implicit IAM Role created for Sam Testing function
     Value:
       Fn::GetAtt:
-        - SamTestingFunctionRole
-        - Arn
+      - SamTestingFunctionRole
+      - Arn

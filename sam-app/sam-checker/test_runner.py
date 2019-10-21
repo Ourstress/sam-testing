@@ -34,10 +34,12 @@ def execute():
     htmlOutput = "<h2>Python unittest results</h2><br/>"
     htmlOutput += os.popen("cat /tmp/myProject/unitTestResults.html").read()
 
+    print(os.popen("ls -la /tmp/myProject").read())
     # Get JSON feedback of unit test results
     command = "python3 -m pytest --json-report -v /tmp/myProject/tests.py \
             --json-report-summary --json-report-file /tmp/myProject/unitTestResults.json"
-    os.popen(command).read()
+    test = os.popen(command).read()
+    print(test)
     jsonOutput = json.loads(
         os.popen("cat /tmp/myProject/unitTestResults.json").read())
 
@@ -45,9 +47,9 @@ def execute():
     if ("summary" in jsonOutput):
         if("failed" in jsonOutput["summary"]):
             isComplete = False
-        # elif(jsonOutput["summary"].get("total", 0) == jsonOutput["summary"].get("passed", 1)):
-        #     isComplete = True
-        elif(jsonOutput["exitcode"] == 0 or jsonOutput["exitcode"] == 2):
+        elif(jsonOutput["summary"].get("total", 0) == jsonOutput["summary"].get("passed", 1)):
+            isComplete = True
+        elif(jsonOutput["exitcode"] == 0):
             isComplete = True
         else:
             isComplete = False

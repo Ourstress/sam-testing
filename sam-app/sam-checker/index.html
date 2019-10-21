@@ -192,7 +192,7 @@
                   header: "tests.py",
                   subHeader: "",
                   vModel:
-                  'import unittest\nimport yaml\n\nclass TestExample(unittest.TestCase):\n\tdata_loaded = {}\n\twith open("template.yaml","r") as inFile:\n\t\tdata_loaded = yaml.safe_load(inFile)\n\tdef test_timeout(self):   \n\t\tself.assertEqual(self.data_loaded["Globals"]["Function"]["Timeout"], 30)\n\tdef test_runtime(self):\n\t\tresource_function = \n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Runtime"], "python3.6")\n\tdef test_api_proxy_integration(self):\n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Events"]["SamTesting"]["Properties"]["Path"], "/{proxy+}")\n\nif __name__ == "__main__":\n\tunittest.main()\n'
+                  'import unittest\nimport yaml\n\nclass TestExample(unittest.TestCase):\n\tdata_loaded = {}\n\twith open("template.yaml","r") as inFile:\n\t\tdata_loaded = yaml.safe_load(inFile)\n\tdef test_timeout(self):   \n\t\tself.assertEqual(self.data_loaded["Globals"]["Function"]["Timeout"], 30)\n\tdef test_runtime(self):\n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Runtime"], "python3.6")\n\tdef test_api_proxy_integration(self):\n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Events"]["SamTesting"]["Properties"]["Path"], "/{proxy+}")\n\nif __name__ == "__main__":\n\tunittest.main()\n'
                 },
                 {
                   header: "Editable Code Block",
@@ -327,6 +327,43 @@
     }
     .md-card-header {
       padding: 0 16px 16px 16px;
+    }
+    .button {
+      display: inline-block;
+      border-radius: 4px;
+      background-color: #0099ff;
+      border: none;
+      color: #ffffff;
+      text-align: center;
+      font-size: 20px;
+      padding: 10;
+      transition: all 0.5s;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    #submit span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+    }
+    #submit span:after {
+      content: ">";
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+    }
+    #submit:hover span {
+      padding-right: 25px;
+    }
+    #submit:hover span:after {
+      opacity: 1;
+      right: 0;
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </html>

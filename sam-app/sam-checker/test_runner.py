@@ -13,7 +13,7 @@ def store_content(shownCode, editedCode):
 
 
 def setup_env():
-    os.popen("cp -r -u /var/task/sam-checker/* /tmp/myProject").read()
+    os.popen("cp -r -u /var/task/* /tmp/myProject").read()
 
 
 def execute():

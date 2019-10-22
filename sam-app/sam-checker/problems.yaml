@@ -1,0 +1,36 @@
+Problems:
+  One:
+    Introduction: Do something
+    Editable: >
+      def sum(a,b):
+        return a+b
+    Tests: >
+      import unittest
+      
+      import example
+      
+      class TestExample(unittest.TestCase):
+        def test_positive_num(self):
+          self.assertEqual(example.sum(2,2), 4)
+      if __name__ == '__main__':
+        unittest.main()
+    Hidden: hello I am hidden
+  Two:
+    Introduction: Do something
+    Editable: >
+      def evenOrOdd(num):
+        if num%2 == 0:
+          return 'ODD'
+        else:
+          return 'EVEN'
+    Tests: >
+      import unittest
+      
+      import example   
+      
+      class TestExample(unittest.TestCase):
+        def test_even(self):
+          self.assertEqual(example.evenOrOdd(2), 'EVEN')
+      if __name__ == '__main__':
+        unittest.main()
+    Hidden: hello I am hidden

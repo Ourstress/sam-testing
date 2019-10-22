@@ -1,367 +1,360 @@
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport">
-    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.css" />
-  </head>
-  <body>
-    <h1>SAM Activity</h1>
-      <div id="app">
-        <md-tabs id="header">
-          <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
-            <doctest-activity v-bind:layout-things=question.layoutItems v-bind:question-name=question.name  @questionhandler="toggleQuestionStatus"/>
-          </md-tab>
-        </md-tabs>
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport" />
+  <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////6+fv/W0KZ/1tCmf9bQpn//v7+///////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQpn//v7//////////////////Y+PjzkAAAAAAAAAAAAAAAAAAAAA/////1tCmf9bQpn//////1tCmf9bQpn/W0KZ/1tCmf9bQpn/W0GZ/0gTkv/+/v7//////wAAAAAAAAAAAAAAAP////9bQpn//////////9r/////opDE/1tCmf9bQpn/W0KZ/1tCmf9bQpn/W0KZ/1o+mv//////AAAAAAAAAAD/////Z1Ke//////8AAAAAAAAAAP////+FcrL/W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQpn//////wAAAAAAAAAAAAAAAP//////////////SwAAAAAAAAAA//////////9bQpn/W0KZ/19Hm/////////////////8AAAAAAAAAAP////v/////W0KZ//////8AAAAA/////04jlf9cRJr//////1tCmf//////W0KZ/+nn8P/////+AAAAAAAAAAD////5nYvB/1tCmf//////AAAAAP////9bQpn/W0KZ/////////////////1tCmf9fR5v//////wAAAAAAAAAAAAAAAP//////////////+wAAAADf398F//////////////94AAAAAP////v//////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////9YO5j//////wAAAAD//////////////8oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////W0KZ////////////8O71/1pBmf//////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAC/////1tCmf9bQpn//////1tCmf9bQpn//////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////1o/mf9bQpn/W0KZ//////9bQpn/W0KZ///////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////9bQpn/W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQZn//////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL+/vwL///////////////////////////////////////////////8AAAAAwf8AAIB/AACADwAAgAMAAIABAACMAQAAzgEAAIQBAACEAQAAxmMAAP4jAAD+AwAA/gMAAPwBAAD8AQAA/AEAAA==" />
+  <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.css" />
+  <link rel="stylesheet" href="https://codemirror.net/addon/scroll/simplescrollbars.css" />
+</head>
+
+<body>
+  <div id="app">
+    <div class="md-layout">
+      <div class="md-layout-item">
+        <h1 style="padding: 0px; margin-top:0.5rem; margin-bottom:0.5rem;">Python
+          - Learn Unit Testing</h1>
       </div>
-  </body> 
-  <script src="https://unpkg.com/vue"></script>
-  <script src="https://unpkg.com/vue-material@beta"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/python/python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/yaml/yaml.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue-codemirror@4.0.6/dist/vue-codemirror.min.js"></script>
-  <script>
-    Vue.use(VueMaterial.default);
-    Vue.use(window.VueCodemirror);
-
-    Vue.component("doctest-activity", {
-      props: ["layoutThings", "questionName"],
-      data: function() {
-        return {
-          answer: {
-            jsonFeedback: "",
-            htmlFeedback: "",
-            textFeedback: "",
-            isComplete: false
-          },
-          layoutItems: this.layoutThings,
-          isHidden: true,
-          submitText: "Submit",
-          isCorrectColor: "#ff5252",
-          cmOptions: {
-            mode: "yaml",
-            lineNumbers: true
-          },
-          cmReadOnly: {
-            lineNumbers: true,
-            mode: "python",
-            readOnly: true
-          }
-        };
-      },
-      methods: {
-        postContents: function() {
-          // comment: leaving the gatewayUrl empty - API will post back to itself
-          const gatewayUrl = "";
-          this.$set(this, "answer", {
-            jsonFeedback: "",
-            htmlFeedback: "",
-            textFeedback: "",
-            isComplete: false
-          });
-          this.$set(this, 'submitText', 'Loading...');
-          this.$set(this, 'isHidden', true);
-          fetch(gatewayUrl, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              shown: { 0: this.layoutItems[0].vModel },
-              editable: { 0: this.layoutItems[1].vModel }
-            })
-          })
-            .then(response => {
-              return response.json();
-            })
-            .then(data => {
-              let temp = JSON.parse(JSON.stringify(data));
-              temp.jsonFeedback = JSON.stringify(temp.jsonFeedback,null,2);
-              this.$set(this, 'answer', temp);
-              this.$set(this, 'isHidden', false);
-              this.$set(this, 'submitText', 'Submit');
-                if (this.answer && this.answer.isComplete) {
-                  this.$set(this, 'isCorrectColor', 'green');
-                } else {
-                  this.$set(this, 'isCorrectColor', '#ff5252');
-                }
-              return this.$emit("questionhandler", {
-                data,
-                questionName: this.questionName
-              });
-            });
-        }
-      },
-      template: `<div class="md-layout  md-gutter">
-                <div id="cardGroupPreview" class="md-layout-item">
-                    <md-card>
-                        <md-card-header>
-                            <md-card-header-text>
-                                <div class="md-title">Instructions</div>
-                            </md-card-header-text>
-                        </md-card-header>
-                        <md-card-content>
-                            <md-field>
-                                <md-tabs>
-                                    <md-tab :md-label="layoutItems[2].header">
-                                <div class="md-subhead">{{layoutItems[2].subHeader}}</div>
-                                <md-textarea v-model="layoutItems[2].vModel" readonly></md-textarea>
-                    </md-tab>            
-                <md-tab  :md-label="layoutItems[0].header">
-                                <div class="md-subhead">{{layoutItems[0].subHeader}}</div>
-                                <codemirror class="testsTextarea" v-model="layoutItems[0].vModel" :options="cmReadOnly"></codemirror>
-                    </md-tab>
-                    <md-tab v-for="item in layoutItems.slice([3,])" :md-label="item.header">
-                                <div class="md-subhead">{{item.subHeader}}</div>
-                                <codemirror class="appTextarea" v-model="item.vModel" :options="cmReadOnly"></codemirror>
-                    </md-tab>
-                    </md-tabs>
-                            </md-field>
-                        </md-card-content>
-                    </md-card>
-                    
-                    <md-card>
-                        <md-card-header>
-                            <md-card-header-text>
-                                <div class="md-title">Output</div>
-                                <div class="md-subhead">Test results</div>
-                            </md-card-header-text>
-                        </md-card-header>
-                        <md-card-content>
-                            <md-field>
-                                <md-tabs>
-                                    <md-tab id="tab-htmlResults" md-label="HTML results">
-                                        <div v-html="answer.htmlFeedback"></div>
-                                    </md-tab>
-                                    <md-tab id="tab-jsonResults" md-label="JSON results">
-                                        <md-textarea v-model="answer.jsonFeedback" readonly></md-textarea>
-                                    </md-tab>
-                                    <md-tab id="tab-textResults" md-label="Text results">
-                                        <md-textarea v-model="answer.textFeedback" readonly></md-textarea>
-                                    </md-tab>
-                                </md-tabs>
-                            </md-field>
-                        </md-card-content>
-                    </md-card>
-                </div>
-                <div id="cardGroupCreator" class="md-layout-item">
-                    <md-card>
-                        <md-card-header>
-                            <md-card-header-text>
-                                <div class="md-title">{{layoutItems[1].header}}</div>
-                                <div class="md-subhead">{{layoutItems[1].subHeader}}</div>
-                            </md-card-header-text>
-                                  <button class="button" id="submit" v-on:click="postContents">
-                                    <span>{{ submitText }}</span>
-                                  </button>
-                                  <button
-                                    class="button"
-                                    v-bind:class="{ hidden: isHidden}"
-                                    v-bind:style="{ background: isCorrectColor}"
-                                  >
-                                    <span>{{
-                                      answer && answer.isComplete ? "Passed" : "Failed"
-                                    }}</span>
-                                  </button>
-                        </md-card-header>
-                        <md-card-content>
-                            <md-field>
-                                <codemirror class="editableTextarea" v-model="layoutItems[1].vModel" :options="cmOptions"></codemirror>
-                            </md-field>
-                        </md-card-content>
-                    </md-card>
-                </div>            
-            </div>
-            `
-    });
-
-    new Vue({
-      el: "#app",
-      data: function() {
-        return {
-          questions: [
-            {
-              name: "question 1",
-              layoutItems: [
-                {
-                  header: "tests.py",
-                  subHeader: "",
-                  vModel:
-                  'import unittest\nimport yaml\n\nclass TestExample(unittest.TestCase):\n\tdata_loaded = {}\n\twith open("/tmp/myProject/template.yaml","r") as inFile:\n\t\tdata_loaded = yaml.safe_load(inFile)\n\tdef test_timeout(self):   \n\t\tself.assertEqual(self.data_loaded["Globals"]["Function"]["Timeout"], 30)\n\tdef test_runtime(self):\n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Runtime"], "python3.6")\n\tdef test_api_proxy_integration(self):\n\t\tself.assertEqual(self.data_loaded["Resources"]["SamTestingFunction"]["Properties"]["Events"]["SamTesting"]["Properties"]["Path"], "/{proxy+}")\n\nif __name__ == "__main__":\n\tunittest.main()\n'
-                },
-                {
-                  header: "Editable Block",
-                  subHeader: "",
-                  vModel:
-                  'AWSTemplateFormatVersion: "2010-09-09"\nTransform: AWS::Serverless-2016-10-31\nDescription: >\n  sam-app\n\n  Sample SAM Template for sam-app\nGlobals:\n  Function:\n    Timeout: 3\n\nResources:\n  SamTestingFunction:\n    Type: AWS::Serverless::Function\n    Properties:\n      CodeUri: sam-checker/\n      Handler: app.lambda_handler\n      Runtime: python2.7\n      Events:\n        SamTesting:\n          Type: Api \n          Properties:\n            Path: /\n            Method: ANY\n'
-                },
-                {
-                  header: "Introduction",
-                  subHeader: "",
-                  vModel: "Edit the template.yaml file so that the tests pass."
-                },
-                {
-                  header: "app.py",
-                  mode: "python",
-                  subHeader: "",
-                  vModel:
-                    'import json\nimport requests\ndef lambda_handler(event, context):\n\treturn {\n\t\t"statusCode": 200,\n\t\t"body": json.dumps(\n\t\t\t{"message": "hello world"}\n\t\t),\n\t}'
-                }
-              ],
-              status: " 🔴"
-            }
-          ]
-        };
-      },
-      methods: {
-        toggleQuestionStatus(response) {
-          const { data, questionName } = response;
-          if (data.htmlFeedback) {
-            const searchText = data.htmlFeedback;
-            searchText.search(/b2d8b2/) !== -1
-              ? searchText.search(/#ff9999/) == -1
-                ? (this.questions.find(item => item.name === questionName).status =
-                    " ✔️")
-                : (this.questions.find(item => item.name === questionName).status =
-                    " 🤨")
-              : (this.questions.find(item => item.name === questionName).status =
-                  " 🔴");
-          }
+    </div>
+    <md-tabs>
+      <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
+        <jest-activity v-bind:layout-things=question.layoutItems
+          v-bind:question-name=question.name @questionhandler="toggleQuestionStatus" />
+      </md-tab>
+    </md-tabs>
+  </div>
+</body>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vue-material@beta"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/python/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-codemirror@4.0.6/dist/vue-codemirror.min.js"></script>
+<script src="https://codemirror.net/addon/scroll/simplescrollbars.js"></script>
+<script>
+  Vue.use(VueMaterial.default)
+  Vue.use(window.VueCodemirror)
+  Vue.component('jest-activity', {
+    props: ['layoutThings', 'questionName'],
+    data: function () {
+      return {
+        answer: { jsonFeedback: '', htmlFeedback: '', textFeedback: '', isComplete: false },
+        layoutItems: this.layoutThings,
+        isHidden: true,
+        submitText: "Submit",
+        isCorrectColor: "#ff5252",
+        cmOptions: {
+          mode: "python",
+          lineNumbers: true,
+          scrollbarStyle: "simple"
+        },
+        cmReadOnly: {
+          lineNumbers: true,
+          mode: "python",
+          readOnly: true,
+          scrollbarStyle: "simple"
+        },
+        cmInstructions: {
+          lineNumbers: false,
+          mode: "text",
+          readOnly: true,
+          scrollbarStyle: "simple"
         }
       }
-    });
-  </script>
-  <style lang="scss" scoped>
-    h1 {
-      background-color: gainsboro;
+    },
+    methods: {
+      postContents: function () {
+        const gatewayUrl = '';
+        this.$set(this, 'submitText', 'Loading...');
+        this.$set(this, 'answer', { jsonFeedback: '', htmlFeedback: '', textFeedback: '', isComplete: false });
+        this.$set(this, 'isHidden', true);
+        fetch(gatewayUrl, {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userToken: "ABCDE", shown: { 0: this.layoutItems[0].vModel }, editable: { 0: this.layoutItems[1].vModel }, hidden: { 0: this.layoutItems[2].vModel } })
+        }).then(response => {
+          return response.json()
+        }).then(data => {
+          let temp = JSON.parse(JSON.stringify(data));
+          temp.jsonFeedback = JSON.stringify(temp.jsonFeedback, null, 2);
+          this.$set(this, 'answer', temp);
+          this.$set(this, 'isHidden', false);
+          this.$set(this, 'submitText', 'Submit');
+          if (this.answer && this.answer.isComplete) {
+            this.$set(this, 'isCorrectColor', 'green');
+          } else {
+            this.$set(this, 'isCorrectColor', '#ff5252');
+          }
+          return this.$emit('questionhandler', { data, questionName: this.questionName })
+        })
+      }
+    },
+    template: `<div class="md-layout">
+          <div class="md-layout-item md-size-100">
+            <div class="md-layout md-gutter">
+              <div class="md-layout-item md-size-50">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Introduction</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="instructionTextarea"
+                      v-model="layoutItems[3].vModel"
+                      :options="cmInstructions"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+              <div class="md-layout-item md-size-50">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Tests</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="shownTextarea"
+                      v-model="layoutItems[0].vModel"
+                      :options="cmReadOnly"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="md-layout-item md-size-100" style="margin-top:10px;">
+            <div class="md-layout md-gutter">
+              <div class="md-layout-item md-size-50">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Editable code</b></div>
+                    </md-card-header-text>
+                    <button class="button" id="submit" v-on:click="postContents">
+                      <span>{{ submitText }}</span>
+                    </button>
+                    <button
+                      class="button"
+                      v-bind:class="{ hidden: isHidden}"
+                      v-bind:style="{ background: isCorrectColor}"
+                    >
+                      <span>{{
+                        answer && answer.isComplete ? "Passed" : "Failed"
+                      }}</span>
+                    </button>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="editableTextarea"
+                      v-model="layoutItems[1].vModel"
+                      :options="cmOptions"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+              <div class="md-layout-item md-size-50">
+                <md-card>
+                  <md-card-header>
+                    <md-card-header-text>
+                      <div class="md-subheading"><b>Output</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <md-field>
+                      <md-tabs class="output-tabs">
+                        <md-tab id="tab-htmlResults" md-label="HTML results">
+                          <div
+                            class="output-tab"
+                            v-html="answer.htmlFeedback"
+                            style="overflow: scroll;"
+                          ></div>
+                        </md-tab>
+                        <md-tab id="tab-jsonResults" md-label="JSON results">
+                          <md-textarea
+                            class="output-tab"
+                            v-model="answer.jsonFeedback"
+                            readonly
+                          ></md-textarea>
+                        </md-tab>
+                        <md-tab id="tab-textResults" md-label="Text results">
+                          <md-textarea
+                            class="output-tab"
+                            v-model="answer.textFeedback"
+                            readonly
+                          ></md-textarea>
+                        </md-tab>
+                      </md-tabs>
+                    </md-field>
+                  </md-card-content>
+                </md-card>
+              </div>
+            </div>
+          </div>
+        </div>`
+  })
+  new Vue({
+    el: "#app",
+    data: function () {
+      return {
+        questions: [
+          {
+            name: "question 1", layoutItems: [
+              { vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdef test_positive_num(self):\n\t\tself.assertEqual(example.sum(2,2), 4)\n\tdef test_zero(self):\n\t\tself.assertEqual(example.sum(0,0), 0)\n\tdef test_negative_num(self):\n\t\tself.assertEqual(example.sum(-1,0), -1)\n\nif __name__ == '__main__':\n\tunittest.main()" },
+              { vModel: "def sum(a,b):\n    return a-b" },
+              { vModel: "test" },
+              { vModel: "Edit your code to pass the tests! All the best!" }
+            ], status: " 🔴"
+          },
+          {
+            name: "question 2", layoutItems: [
+              { vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdef test_even(self):\n\t\tself.assertEqual(example.evenOrOdd(2), \"EVEN\")\n\tdef test_odd(self):\n\t\tself.assertEqual(example.evenOrOdd(3), \"ODD\")\n\tdef test_negative_val(self):\n\t\tself.assertEqual(example.evenOrOdd(-1), \"ODD\")\n\t\tself.assertEqual(example.evenOrOdd(-2), \"EVEN\")\nif __name__ == '__main__':\n\tunittest.main()" },
+              { vModel: "def evenOrOdd(num):\n    if num%2 == 0:\n        return \"ODD\"\n    else:\n        return \"EVEN\"" },
+              { vModel: "test" },
+              { vModel: "Edit your code to pass the tests! All the best!" }
+            ], status: " 🔴"
+          },
+          {
+            name: "question 3", layoutItems: [
+              { vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdef test_zero(self):\n\t\tself.assertEqual(example.factorial(0), 1)\n\tdef test_interger_val(self):\n\t\tself.assertEqual(example.factorial(3), 6)\n\t\tself.assertEqual(example.factorial(4), 24)\n\tdef test_negative_val(self):\n\t\twith self.assertRaises(ValueError):\n\t\t\texample.factorial(-2)\nif __name__ == '__main__':\n\tunittest.main()" },
+              { vModel: "def factorial(n):\n    fact = 1\n    #if n < 0:\n    #    raise ValueError(\"Factorial not defined for negative values\")\n    for i in range(1,n+1): \n        fact = fact * i \n    return fact" },
+              { vModel: "test" },
+              { vModel: "Edit your code to pass the tests! All the best!" }
+            ], status: " 🔴"
+          },
+          {
+            name: "question 4", layoutItems: [
+              { vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdef test_fizz(self):\n\t\tself.assertEqual(example.fizzBuzz(3), \"Fizz\")\n\tdef test_buzz(self):\n\t\tself.assertEqual(example.fizzBuzz(10), \"Buzz\")\n\tdef test_fizzbuzz(self):\n\t\tself.assertEqual(example.fizzBuzz(15), \"FizzBuzz\")\n\tdef test_false_val(self):\n\t\tself.assertEqual(example.fizzBuzz(4), 4)\nif __name__ == '__main__':\n\tunittest.main()" },
+              { vModel: "def fizzBuzz(num):\n  if num % 3 == 0 and num % 5 == 0:\n    return 'FizzBuzz'\n  elif num % 3 == 0:\n    return 'Fizz'\n  elif num % 5 == 0:\n    return 'Buzz'\n  else:\n    return \"No way\"" },
+              { vModel: "test" },
+              { vModel: "Edit your code to pass the tests! All the best!" }
+            ], status: " 🔴"
+          },
+          {
+            name: "question 5", layoutItems: [
+              { vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdef test_prime(self):\n\t\tself.assertEqual(example.checkPrime(3), \"PRIME\")\n\tdef test_notPrime(self):\n\t\tself.assertEqual(example.checkPrime(10), \"NOT PRIME\")\n\tdef test_val_one(self):\n\t\tself.assertEqual(example.checkPrime(1), \"NOT PRIME\")\n\tdef test_negative(self):\n\t\tself.assertEqual(example.checkPrime(-3), \"NOT PRIME\")\nif __name__ == '__main__':\n\tunittest.main()" },
+              { vModel: "def checkPrime(num):\n  # If given number is greater than 1 \n  if num > 1: \n    for i in range(2, num//2): \n      # If num is divisible by any number between  \n      # 2 and n / 2, it is not prime  \n      if (num % i) == 0: \n        return \"NOT PRIME\" \n    else: \n      return #\"PRIME\" \n  else: \n    return #\"NOT PRIME\"" },
+              { vModel: "test" },
+              { vModel: "Edit your code to pass the tests! All the best!" }
+            ], status: " 🔴"
+          }
+        ]
+      }
+    },
+    methods: {
+      toggleQuestionStatus(response) {
+        const { data, questionName } = response
+        if (data.isComplete) {
+          this.questions.find(item => item.name === questionName).status = " ✔️";
+
+        }
+        else {
+          this.questions.find(item => item.name === questionName).status = " 🔴";
+        }
+      }
     }
-    #header > .md-tabs-navigation {
-      background-color: gainsboro;
-    }
-    .md-tabs-navigation .md-button {
-      flex: 1 100px;
-    }
-    .md-card {
-      width: 90%;
-      margin: 20px;
-      display: inline-block;
-      vertical-align: top;
-      min-height: 200px;
-    }
-    .md-card-content {
-      padding-bottom: 16px !important;
-    }
-    button {
-      display: block;
-      margin: 20px 60px 20px 60px;
-      width: 200px !important;
-    }
-    #cardGroupCreator {
-      display: flex;
-      flex-direction: column;
-      padding: 0px;
-      flex: 1 300px;
-      min-width: 0;
-    }
-    #cardGroupPreview .md-card {
-      width: 90%;
-    }
-    #cardGroupPreview {
-      padding: 0px;
-      flex: 1 300px;
-      min-width: 0;
-    }
-    #cardGroupPreview .md-tab {
-      height: 100%;
-    }
-    textarea {
-      font-size: 1rem !important;
-      min-height: 175px !important;
-    }
-    .md-tabs {
-      width: 100%;
-    }
-    .md-tab {
-      overflow-x: auto;
-    }
-    .md-tab::-webkit-scrollbar {
-      width: 0px;
-    }
-    html {
-      mix-blend-mode: darken;
-    }
-    h1 {
-      padding: 20px;
-      margin: auto;
-      text-align: center;
-    }
-    .md-content {
-      min-height: 300px;
-    }
-    .md-tabs-container,
-    .md-tabs-container .md-tab textarea,
-    .md-tabs-content {
-      height: 100% !important;
-    }
-    .md-field {
-      margin: 0px;
-      padding: 0px;
-    }
-    .md-tabs-navigation {
-      justify-content: center !important;
-      flex-wrap: wrap;
-    }
-    .md-card-media {
-      width: 400px !important;
-    }
-    .md-button {
-      margin: 10px !important;
-    }
-    .cm-s-default {
-      height: 100%;
-    }
-    .md-card-header {
-      padding: 0 16px 16px 16px;
-    }
-    .button {
-      display: inline-block;
-      border-radius: 4px;
-      background-color: #0099ff;
-      border: none;
-      color: #ffffff;
-      text-align: center;
-      font-size: 18px;
-      padding: 10;
-      transition: all 0.5s;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    #submit span {
-      cursor: pointer;
-      display: inline-block;
-      position: relative;
-      transition: 0.5s;
-    }
-    #submit span:after {
-      content: ">";
-      position: absolute;
-      opacity: 0;
-      top: 0;
-      right: -20px;
-      transition: 0.5s;
-    }
-    #submit:hover span {
-      padding-right: 25px;
-    }
-    #submit:hover span:after {
-      opacity: 1;
-      right: 0;
-    }
-    .hidden {
-      display: none;
-    }
-  </style>
+  });
+</script>
+<style lang="scss" scoped>
+  textarea {
+    font-size: 1rem !important;
+    height: 100%;
+  }
+
+  .md-card-header {
+    padding-top: 0px;
+  }
+
+  .md-tabs {
+    width: 100%;
+  }
+
+  .md-tab {
+    min-height: 600px;
+  }
+
+  .md-content {
+    min-height: 200px !important;
+  }
+
+  .md-card {
+    overflow: hidden;
+  }
+
+  .md-field {
+    padding-top: 0px;
+  }
+
+  .button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #0099ff;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 20px;
+    padding: 10;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+
+  #submit span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+
+  #submit span:after {
+    content: ">";
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+
+  #submit:hover span {
+    padding-right: 25px;
+  }
+
+  #submit:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .output-tab {
+    min-height: 150px !important;
+    max-height: 150px !important;
+    overflow: scroll;
+  }
+
+  h1 {
+    margin-top: 1rem;
+    padding: 20px;
+    text-align: center
+  }
+
+  .CodeMirror {
+    height: 150px;
+  }
+
+  .CodeMirror-overlayscroll-vertical {
+    display: block !important;
+  }
+</style>
+
 </html>

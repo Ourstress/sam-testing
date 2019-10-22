@@ -3,43 +3,34 @@ import json
 
 
 def store_content(shownCode, editedCode):
-    # tests.py          - shownCode
-    # template.yaml     - editedCode
+    # testExample.py - shownCode
+    # example.py     - editedCode
     os.popen("mkdir -p /tmp/myProject").read()
-    with open('/tmp/myProject/template.yaml', 'w') as outFile:
+    with open('/tmp/myProject/example.py', 'w') as outFile:
         outFile.write(editedCode)
-    with open('/tmp/myProject/tests.py', 'w') as outFile:
+    with open('/tmp/myProject/testExample.py', 'w') as outFile:
         outFile.write(shownCode)
 
 
-def setup_env():
-    os.popen("cp -r -u /var/task/* /tmp/myProject").read()
-
-
 def execute():
-    setup_env()
     # To access custom packages
-    os.environ['PATH'] = os.environ['PATH'] + ":" + "/tmp/myProject"
-
-    print(os.popen("ls -la /tmp/myProject").read())
+    os.environ['PATH'] = os.environ['PATH'] + ":" + "/var/task/bin"
 
     # Get text feedback of unit test results
-    runUnitTest = 'cd /tmp/myProject; python3 -m unittest -v tests.py 2>&1'
+    runUnitTest = 'cd /tmp/myProject; python3 -m unittest -v testExample.py 2>&1'
     unitTestResults = os.popen(runUnitTest).read()
 
     # Get html feedback of unit test results
-    command = "cd /tmp/myProject; python3 -m unittest -v tests.py 2>&1 | \
-                /tmp/myProject/ansi2html.sh > /tmp/myProject/unitTestResults.html"
+    command = "cd /tmp/myProject; python3 -m unittest -v testExample.py 2>&1 | \
+                /var/task/ansi2html.sh > /tmp/myProject/unitTestResults.html"
     os.popen(command).read()
     htmlOutput = "<h2>Python unittest results</h2><br/>"
     htmlOutput += os.popen("cat /tmp/myProject/unitTestResults.html").read()
 
-    print(os.popen("ls -la /tmp/myProject").read())
     # Get JSON feedback of unit test results
-    command = "python3 -m pytest --json-report -v /tmp/myProject/tests.py \
+    command = "python3 -m pytest --json-report -v /tmp/myProject/testExample.py \
             --json-report-summary --json-report-file /tmp/myProject/unitTestResults.json"
-    test = os.popen(command).read()
-    print(test)
+    os.popen(command).read()
     jsonOutput = json.loads(
         os.popen("cat /tmp/myProject/unitTestResults.json").read())
 
@@ -48,8 +39,6 @@ def execute():
         if("failed" in jsonOutput["summary"]):
             isComplete = False
         elif(jsonOutput["summary"].get("total", 0) == jsonOutput["summary"].get("passed", 1)):
-            isComplete = True
-        elif(jsonOutput["exitcode"] == 0):
             isComplete = True
         else:
             isComplete = False

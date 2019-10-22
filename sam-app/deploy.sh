@@ -2,7 +2,7 @@
 
 sam build
 sam package --output-template \
-    packaged.yaml --s3-bucket aishu-samtest
+    packaged.yaml --s3-bucket hello888
 sam  deploy --template-file packaged.yaml \
-    --region ap-southeast-1 --capabilities \
-    CAPABILITY_IAM --stack-name samTesting
+    --region us-east-1 --capabilities \
+    CAPABILITY_IAM --stack-name hello888

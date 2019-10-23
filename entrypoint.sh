@@ -15,29 +15,11 @@ cd sam-app;
 cd sam-checker; zip -r ../lambda-deploy.zip *
 cd ..
 
-aws cloudformation validate-template \
-    --template-body file://template.yaml
- 
-aws cloudformation package \
-   --template-file template.yaml \
-   --output-template-file packaged.yaml \
-   --s3-bucket "${BUCKET_NAME}" 
-
-if  aws cloudformation deploy \
-        --stack-name ${LAMBDA_FUNC_NAME} \
-        --template-file packaged.yaml \
-        --capabilities CAPABILITY_IAM \
-        --region ${AWS_DEFAULT_REGION} \
-        --parameter-overrides LambdaFuncName=${LAMBDA_FUNC_NAME} \
-            LambdaRuntime=${LAMBDA_RUNTIME} \
-            LambdaHandler=${LAMBDA_HANDLER} \
-            LambdaMemory=${LAMBDA_MEMORY} \
-            LambdaTimeout=${LAMBDA_TIMEOUT} 
+if ./deploy.sh
     then 
         exit 0
     else
         exit 1
 fi
-
     
 exit 0 

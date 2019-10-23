@@ -1,17 +1,23 @@
+name: Deploy Lambda Function on push
 on: [push]
 
 jobs:
-  hello_world:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout master
         uses: actions/checkout@master
 
-      - name: Hello world action step
-        id: hello
+      - name: deploy lambda function
         uses: ./
-        with:
-          who-to-greet: "Happy Cat"
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+        env:
+          AWS_DEFAULT_REGION: "us-east-1"
+          LAMBDA_FUNC_NAME: "PythonTestingUsingYaml"
+          LAMBDA_RUNTIME: "python3.7" # See identifers at https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+          LAMBDA_HANDLER: "lambda_function"
+          LAMBDA_MEMORY: 1024
+          LAMBDA_TIMEOUT: 40
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -15,11 +15,6 @@ cd sam-app;
 cd sam-checker; zip -r ../lambda-deploy.zip *
 cd ..
 
-if ./deploy.sh
-    then 
-        exit 0
-    else
-        exit 1
-fi
+./deploy.sh
     
 exit 0 

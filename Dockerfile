@@ -2,7 +2,7 @@
 FROM python:alpine
 
 # install python
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev\
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev zip\
     && pip install cython awscli aws-sam-cli\
     && apk del .build-deps 
 

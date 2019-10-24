@@ -8,7 +8,7 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
 
 # install awscli and zip
 RUN pip3 install awscli 
-RUN pip3 install regex
+RUN pip3 install python3.6-dev
 RUN pip3 install aws-sam-cli
 RUN apk add zip
 

@@ -14,8 +14,12 @@ aws s3 cp --acl public-read lambda-deploy-overlay.tgz "$OVERLAY_S3URL"
 cd sam-app; 
 cd sam-checker; zip -r ../lambda-deploy.zip *
 cd ..
-pwd
-ls -ls .
-sh deploy.sh
+
+if sh deploy.sh
+    then 
+        exit 0
+    else
+        exit 1
+fi
     
 exit 0 

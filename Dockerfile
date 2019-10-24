@@ -2,7 +2,7 @@
 FROM python:alpine
 
 # install python
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev\
     && pip install cython \
     && apk del .build-deps 
 

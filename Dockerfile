@@ -3,13 +3,13 @@ FROM python:alpine
 
 # install python
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev\
-    && pip install cython \
+    && pip install cython awscli aws-sam-cli\
     && apk del .build-deps 
 
 # install awscli and zip
-RUN pip3 install awscli 
-RUN pip3 install --user aws-sam-cli
-RUN apk add zip
+# RUN pip3 install awscli 
+# RUN pip3 install --user aws-sam-cli
+# RUN apk add zip
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh

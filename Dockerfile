@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM python:alpine
+FROM python:3.6-alpine
 
 # install python
 RUN apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev\

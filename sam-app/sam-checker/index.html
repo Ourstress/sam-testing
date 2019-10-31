@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.css" />
   <link rel="stylesheet" href="https://codemirror.net/addon/scroll/simplescrollbars.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.13.1/js-yaml.min.js"></script>
 </head>
 
 <body>
@@ -16,6 +17,7 @@
         <h1 style="padding: 0px; margin-top:0.5rem; margin-bottom:0.5rem;">Python
           - Learn Unit Testing</h1>
       </div>
+      <dialog-activity v-bind:yaml-problems="yamlQuestions" @yamlhandler="yamlToVue" />
     </div>
     <md-tabs>
       <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
@@ -34,6 +36,40 @@
 <script>
   Vue.use(VueMaterial.default)
   Vue.use(window.VueCodemirror)
+
+
+  Vue.component('dialog-activity', {
+    props: ['yamlProblems'],
+    data: function () {
+      return {
+        showDialog: false,
+        cmOptions: {
+          mode: "yaml",
+          lineNumbers: true
+        }
+      }
+    },
+    methods: {
+      onSave: function () {
+        this.showDialog = false;
+        return this.$emit('yamlhandler', this.yamlProblems)
+      }
+    },
+    template: `
+    <div>
+    <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title>Edit questions</md-dialog-title>
+          <codemirror class="editableTextarea" v-model="yamlProblems" :options="cmOptions"></codemirror>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+        <md-button class="md-primary" @click="onSave">Save</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
+    <md-button class="md-primary md-raised" @click="showDialog = true">Show Dialog</md-button>
+  </div>`
+  })
+
   Vue.component('jest-activity', {
     props: ['layoutThings', 'questionName'],
     data: function () {
@@ -204,7 +240,8 @@
     el: "#app",
     data: function () {
       return {
-        questions: ["$$TOBEREPLACEDBYYAML$$"]
+        questions: ["$$TOBEREPLACEDBYYAML$$"],
+        yamlQuestions: jsyaml.dump(`$$TOBEREPLACEDBYRAWYAML$$`)
       }
     },
     methods: {
@@ -217,6 +254,42 @@
         else {
           this.questions.find(item => item.name === questionName).status = " 🔴";
         }
+      },
+      yamlToVue(yaml) {
+        this.yamlToQuestion(jsyaml.load(yaml))
+      },
+      yamlToQuestion(loadedYaml) {
+
+        const templateComponent = `
+        {
+        name: "question $$INDEX$$", layoutItems: [
+            { vModel: "$$SHOWN$$" },
+            { vModel: "$$EDITABLE$$" },
+            { vModel: "$$HIDDEN$$" },
+            { vModel: "$$INTRODUCTION$$" }
+        ], status: " 🔴"
+        }`
+
+        const replacedContent = ["$$INDEX$$", "$$SHOWN$$", "$$EDITABLE$$", "$$HIDDEN$$", "$$INTRODUCTION$$"]
+
+        index = 0
+        component = ""
+        for (let key in loadedYaml["Problems"]) {
+          problem = loadedYaml["Problems"][key]
+
+          console.log("problem", problem)
+
+          const replacementItems = [(index + 1).toString(), problem["Tests"] || "", problem["Editable"] || "", problem["Hidden"] || "", problem["Introduction"] || ""]
+
+          let interimComponent = templateComponent
+
+          replacedContent.map((replacedItem, index) => {
+            interimComponent = interimComponent.replace(replacedContent[index], replacementItems[index])
+          })
+          component += interimComponent
+          index++
+        }
+        return this.questions = component
       }
     }
   });

@@ -40,6 +40,6 @@ def getIndexPage():
         return(component)[:-1]
         
     # make the replacement on index.html
-    webpage = webpage.replace('"$$TOBEREPLACEDBYYAML$$"', replaceWithYaml(document))
+    webpage = webpage.replace('"$$TOBEREPLACEDBYYAML$$"', replaceWithYaml(document)).replace('"$$TOBEREPLACEDBYRAWYAML$$"', document)
     
     return webpage

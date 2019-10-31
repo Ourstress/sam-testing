@@ -1,6 +1,10 @@
 
 # Created by https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
+# Libraries installed during sam build
+sam-checker/yaml/
+sam-checker/PyYAML-5.1.2.dist-info/
+
 ### Linux ###
 *~
 

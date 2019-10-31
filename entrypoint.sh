@@ -9,8 +9,6 @@ export OVERLAY_S3URL="s3://${BUCKET_NAME}/${LAMBDA_FUNC_NAME}/lambda-deploy.tgz"
 
 
 rm -f lambda-deploy.zip
-tar -czvf lambda-deploy-overlay.tgz ./
-aws s3 cp --acl public-read lambda-deploy-overlay.tgz "$OVERLAY_S3URL"
 cd sam-app; 
 cd sam-checker; zip -r ../lambda-deploy.zip *
 cd ..

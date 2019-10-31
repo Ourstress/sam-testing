@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sam build
+sam build --use-container
 sam package --output-template \
     packaged.yaml --s3-bucket hello888
 sam  deploy --template-file packaged.yaml \

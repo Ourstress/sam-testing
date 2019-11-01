@@ -21,7 +21,7 @@
     </div>
     <md-tabs>
       <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
-        <jest-activity v-bind:layout-things=question.layoutItems
+        <jest-activity v-bind:layout-things.sync=question.layoutItems
           v-bind:question-name=question.name @questionhandler="toggleQuestionStatus" />
       </md-tab>
     </md-tabs>
@@ -43,6 +43,7 @@
     data: function () {
       return {
         showDialog: false,
+        yamlProblem: this.yamlProblems,
         cmOptions: {
           mode: "yaml",
           lineNumbers: true
@@ -52,14 +53,14 @@
     methods: {
       onSave: function () {
         this.showDialog = false;
-        return this.$emit('yamlhandler', this.yamlProblems)
+        return this.$emit('yamlhandler', this.yamlProblem)
       }
     },
     template: `
     <div>
     <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>Edit questions</md-dialog-title>
-          <codemirror class="editableTextarea" v-model="yamlProblems" :options="cmOptions"></codemirror>
+          <codemirror class="editableTextarea" v-model="yamlProblem" :options="cmOptions"></codemirror>
       <md-dialog-actions>
         <md-button class="md-primary" @click="showDialog = false">Close</md-button>
         <md-button class="md-primary" @click="onSave">Save</md-button>
@@ -96,6 +97,12 @@
           readOnly: true,
           scrollbarStyle: "simple"
         }
+      }
+    },
+    watch: {
+      // This would be called anytime the value of title changes
+      layoutThings(newValue, oldValue) {
+        this.$set(this, 'layoutItems', newValue)
       }
     },
     methods: {
@@ -241,7 +248,7 @@
     data: function () {
       return {
         questions: ["$$TOBEREPLACEDBYYAML$$"],
-        yamlQuestions: jsyaml.dump(`$$TOBEREPLACEDBYRAWYAML$$`)
+        yamlQuestions: jsyaml.dump("$$TOBEREPLACEDBYRAWYAML$$")
       }
     },
     methods: {
@@ -273,7 +280,7 @@
         const replacedContent = ["$$INDEX$$", "$$SHOWN$$", "$$EDITABLE$$", "$$HIDDEN$$", "$$INTRODUCTION$$"]
 
         index = 0
-        component = ""
+        component = []
         for (let key in loadedYaml["Problems"]) {
           problem = loadedYaml["Problems"][key]
 
@@ -286,10 +293,13 @@
           replacedContent.map((replacedItem, index) => {
             interimComponent = interimComponent.replace(replacedContent[index], replacementItems[index])
           })
-          component += interimComponent
+          component = [...component, jsyaml.safeLoad(interimComponent)]
           index++
         }
-        return this.questions = component
+        console.log("component", component)
+        Vue.set(this, 'questions', component)
+        console.log("this.questions", this.questions)
+        return true
       }
     }
   });

@@ -67,7 +67,7 @@
       </md-dialog-actions>
     </md-dialog>
 
-    <md-button class="md-primary md-raised" @click="showDialog = true">Show Dialog</md-button>
+    <md-button class="md-primary md-raised" @click="showDialog = true">Edit questions</md-button>
   </div>`
   })
 
@@ -102,7 +102,7 @@
     watch: {
       // This would be called anytime the value of title changes
       layoutThings(newValue, oldValue) {
-        this.$set(this, 'layoutItems', newValue)
+        return this.$set(this, 'layoutItems', newValue)
       }
     },
     methods: {
@@ -279,14 +279,16 @@
 
         const replacedContent = ["$$INDEX$$", "$$SHOWN$$", "$$EDITABLE$$", "$$HIDDEN$$", "$$INTRODUCTION$$"]
 
+        function escapeNewLine(string) {
+          return string.replace(/\n/g, "\\n")
+        }
+
         index = 0
         component = []
         for (let key in loadedYaml["Problems"]) {
           problem = loadedYaml["Problems"][key]
 
-          console.log("problem", problem)
-
-          const replacementItems = [(index + 1).toString(), problem["Tests"] || "", problem["Editable"] || "", problem["Hidden"] || "", problem["Introduction"] || ""]
+          const replacementItems = [(index + 1).toString(), problem["Tests"] && escapeNewLine(problem["Tests"]) || "", problem["Editable"] && escapeNewLine(problem["Editable"]) || "", problem["Hidden"] && escapeNewLine(problem["Hidden"]) || "", problem["Introduction"] && escapeNewLine(problem["Introduction"]) || ""]
 
           let interimComponent = templateComponent
 
@@ -296,10 +298,7 @@
           component = [...component, jsyaml.safeLoad(interimComponent)]
           index++
         }
-        console.log("component", component)
-        Vue.set(this, 'questions', component)
-        console.log("this.questions", this.questions)
-        return true
+        return Vue.set(this, 'questions', component)
       }
     }
   });
